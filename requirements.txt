@@ -1,0 +1,20 @@
+python-dotenv
+requests
+Flask-SQLAlchemy==2.4.3
+Flask==2.2.2
+Werkzeug
+aniso8601==8.0.0
+click==8.1.3
+Flask-RESTful==0.3.8
+Flask-Migrate==3.1.0
+itsdangerous
+Jinja2
+pytz==2020.1
+six==1.15.0
+psycopg2-binary ==2.9.5
+apscheduler
+waitress
+pymysql
+flask-cors
+
+
