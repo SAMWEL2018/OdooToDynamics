@@ -12,11 +12,14 @@ from OrderTrackerNumber import findCurrentOrderIndex, OrderTrackingUpdate, Skipp
 import logsConfigs as applog
 from Dbqueries import query
 import pymysql
+from  datetime import  datetime
 
 UNEXPECTED_STATUS_CODE = 417
 CREATED_STATUS_CODE = 201
 REQUEST_TIMEOUT_CODE = 408
 NOTFOUND_STATUS_CODE=404
+current_date = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+
 
 
 class OrderProcessing:
@@ -76,7 +79,7 @@ class OrderProcessing:
                         SkippedOrder((str(id)))
 
                         self.emailSend.SendErrorOnEmail(description, pos_reference)
-                        self.query.PostAllOrders(ordered['id'], pos_reference, 0)
+                        self.query.PostAllOrders(ordered['id'], pos_reference, 0,current_date,description)
                         OrderTrackingUpdate(str(id + 1))
                         return "Product has no Itemid in dynamics therefore terminating post: +%s"% product_name, 417
                 else:
@@ -84,7 +87,7 @@ class OrderProcessing:
                     SkippedOrder((str(id)))
 
                     self.emailSend.SendErrorOnEmail(res, pos_reference)
-                    self.query.PostAllOrders(ordered['id'], pos_reference, 0)
+                    self.query.PostAllOrders(ordered['id'], pos_reference, 0,current_date,res)
                     OrderTrackingUpdate(str(id + 1))
                     # appLog(2,"Response from API: "+res)
                     return "product reference no found: %s "% product_name, UNEXPECTED_STATUS_CODE
@@ -92,12 +95,12 @@ class OrderProcessing:
                 res = self.http.post_Request(self.header.getJson())
                 if "error" not in str(res):
                     if is_retry:
-                        self.query.PostAllOrders(ordered['id'], pos_reference, 1)
+                        self.query.PostAllOrders(ordered['id'], pos_reference, 1,current_date,"")
                         applog.log(1,"Posted Sales Order : "+self.header.getJson())
                         print('Retry Posted')
                         return "Order created successfully", CREATED_STATUS_CODE
                     applog.log(1, "Posted Sales Order : " + self.header.getJson())
-                    self.query.PostAllOrders(ordered['id'], pos_reference, 1)
+                    self.query.PostAllOrders(ordered['id'], pos_reference, 1,current_date,"")
                     OrderTrackingUpdate(str(id + 1))
                     print('Order Posted')
                     return 'Order created successfully ', CREATED_STATUS_CODE
@@ -105,7 +108,7 @@ class OrderProcessing:
 
                     SkippedOrder((str(id)))
                     OrderTrackingUpdate(str(id + 1))
-                    self.query.PostAllOrders(ordered['id'], pos_reference, 0)
+                    self.query.PostAllOrders(ordered['id'], pos_reference, 0,current_date,'Http error on sales url')
                     print('not posted')
                     return 'Order Not Posted, http error, Contact Admin', REQUEST_TIMEOUT_CODE
 

@@ -17,10 +17,10 @@ class query:
         return conn, c
 
     #
-    def PostAllOrders(self, id, doc_no, is_posted):
+    def PostAllOrders(self, id, doc_no, is_posted,date_posted,reason):
         conn, c = self.sql_connector()
         # c.execute("SELECT * FROM `orders` WHERE `order_id` = 31214")
-        c.execute("INSERT INTO orders VALUES ('{}','{}','{}')".format(id, doc_no, is_posted))
+        c.execute("INSERT INTO orders VALUES ('{}','{}','{}','{}','{}')".format(id, doc_no, is_posted,date_posted,reason))
         conn.commit()
         conn.close()
         c.close()
